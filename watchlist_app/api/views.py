@@ -3,6 +3,7 @@ from . import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 
 '''
 @api_view()
@@ -23,3 +24,30 @@ def movie_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+# PUT --> update(whole object kei pathate hoy)
+# PATCH --> je part ta change korbo setake pathalei hobe
+def movie_detail(request, pk):
+    movie = get_object_or_404(models.MovieList, pk=pk)   
+
+    if request.method == 'GET':
+        serializer = serializers.MovieListSerializer(movie) 
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'PUT':
+        serializer = serializers.MovieListSerializer(movie, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PATCH':
+        serializer = serializers.MovieListSerializer(movie, data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        movie.delete()
+        return Response({'message' : 'Movie deleted successfully!!'})
