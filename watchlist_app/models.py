@@ -8,3 +8,10 @@ class MovieList(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Reviews(models.Model):
+    movie = models.ForeignKey(MovieList, on_delete=models.CASCADE, related_name="reviews")  
+    reviewer = models.CharField(max_length=100)
+    rating = models.IntegerField()
+    comment = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)  

@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from rest_framework import generics
 
 '''
 @api_view()
@@ -11,6 +12,7 @@ def movie_list(request):
     movies = models.MovieList.objects.all() # python objects
     serializer = serializers.MovieListSerializer(movies, many=True) # python object ke json a convert korbe
     return Response(serializer.data)
+'''
 '''
 @api_view(['GET', 'POST'])
 def movie_list(request):
@@ -51,3 +53,14 @@ def movie_detail(request, pk):
     elif request.method == 'DELETE':
         movie.delete()
         return Response({'message' : 'Movie deleted successfully!!'})
+        '''
+# 1. List of all movies , create a new movie
+class MovieListCreateView(generics.ListAPIView):
+    queryset = models.MovieList.objects.all()
+    serializer_class = serializers.MovieListSerializer
+
+
+# 2.single movie/update/delete
+class MovieDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.MovieList.objects.all()
+    serializer_class = serializers.MovieListSerializer
